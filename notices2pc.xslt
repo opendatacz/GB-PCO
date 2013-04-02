@@ -476,7 +476,6 @@
 							<xsl:text>http://ld.opendata.cz/resource/contractsfinder.businesslink.gov.uk/contract/</xsl:text>
 							<xsl:value-of select="uuid:get-uuid()" />
 						</xsl:attribute>-->
-						<rdf:type rdf:resource="http://purl.org/procurement/public-contracts#Contract" />
 						<xsl:call-template name="contractAward">
 							<xsl:with-param name="it" select="position()" />
 							<xsl:with-param name="award" select=".." />
@@ -506,15 +505,14 @@
 		</xsl:if>
 		<xsl:if test="$award/ECONOMIC_OPERATOR_NAME_ADDRESS[$it]">
 			<pc:awardedTender>
-				<rdf:Description>
+				<pc:Tender>
 					<!--<xsl:attribute namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" name="about">
 						<xsl:text>http://ld.opendata.cz/resource/contractsfinder.businesslink.gov.uk/tender/</xsl:text>
 						<xsl:value-of select="uuid:get-uuid()" />
 					</xsl:attribute>-->
-					<rdf:type rdf:resource="http://purl.org/procurement/public-contracts#Tender" />
 					<xsl:if test="$award/CONTRACT_VALUE_INFORMATION[$it]/COSTS_RANGE_AND_CURRENCY_WITH_VAT_RATE/VALUE_COST/text()">
 						<pc:offeredPrice>
-							<rdf:Description>
+							<gr:PriceSpecification>
 								<gr:hasCurrencyValue>
 									<xsl:value-of select="$award/CONTRACT_VALUE_INFORMATION[$it]/COSTS_RANGE_AND_CURRENCY_WITH_VAT_RATE/VALUE_COST/text()"/>
 								</gr:hasCurrencyValue>
@@ -523,33 +521,23 @@
 										<xsl:value-of select="$award/CONTRACT_VALUE_INFORMATION[$it]/COSTS_RANGE_AND_CURRENCY_WITH_VAT_RATE/@CURRENCY"/>
 									</gr:hasCurrency>
 								</xsl:if>
-								<gr:valueAddedTaxIncluded>true</gr:valueAddedTaxIncluded>
-							</rdf:Description>
+								<gr:valueAddedTaxIncluded rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</gr:valueAddedTaxIncluded>
+							</gr:PriceSpecification>
 						</pc:offeredPrice>
 					</xsl:if>
 					<pc:supplier>
-						<rdf:Description>
+						<gr:BusinessEntity>
 							<!--<xsl:attribute namespace="http://www.w3.org/1999/02/22-rdf-syntax-ns#" name="about">
 								<xsl:text>http://ld.opendata.cz/resource/contractsfinder.businesslink.gov.uk/business-entity/</xsl:text>
 								<xsl:value-of select="uuid:get-uuid()" />
 							</xsl:attribute>-->
-							<rdf:type rdf:resource="http://purl.org/goodrelations/v1#BusinessEntity" />
 							<xsl:variable name="supplierLegalName" select="$award/ECONOMIC_OPERATOR_NAME_ADDRESS[$it]/CONTACT_DATA_WITHOUT_RESPONSIBLE_NAME/ORGANISATION/text()"/>
 							<xsl:if test="$supplierLegalName">
-								<gr:legalName>
-									<xsl:value-of select="$supplierLegalName"/>
-								</gr:legalName>
-								<rdfs:label>
-									<xsl:value-of select="$supplierLegalName"/>
-								</rdfs:label>
-								<dcterms:title>
-									<xsl:value-of select="$supplierLegalName"/>
-								</dcterms:title>
+								<gr:legalName><xsl:value-of select="$supplierLegalName"/></gr:legalName>
 							</xsl:if>
 							<xsl:if test="CA_CE_CONCESSIONAIRE_PROFILE/(E_MAIL|PHONE|FAX|CONTACT_POINT|URL_BUYER|ADDRESS|TOWN|POSTAL_CODE|COUNTRY)/text()">
 								<s:address>
-									<rdf:Description>
-										<rdf:type rdf:resource="http://schema.org/PostalAddress" />
+									<s:PostalAddress>
 										<xsl:if test="CA_CE_CONCESSIONAIRE_PROFILE/ADDRESS/text()">
 											<s:streetAddress>
 												<xsl:value-of select="CA_CE_CONCESSIONAIRE_PROFILE/ADDRESS"/>
@@ -573,15 +561,14 @@
 											</xsl:when>
 											<xsl:otherwise>
 												<s:addressCountry>
-													<xsl:text>GB</xsl:text>
+													<xsl:text>Great Britain</xsl:text>
 												</s:addressCountry>
 											</xsl:otherwise>
 										</xsl:choose>
-									</rdf:Description>
+									</s:PostalAddress>
 								</s:address>
 								<s:contactPoint>
-									<rdf:Description>
-										<rdf:type rdf:resource="http://schema.org/ContactPoint" />
+									<s:ContactPoint>
 										<xsl:if test="$award/ECONOMIC_OPERATOR_NAME_ADDRESS[$it]/E_MAIL/text()">
 											<s:email>
 												<xsl:value-of select="$award/ECONOMIC_OPERATOR_NAME_ADDRESS[$it]/E_MAIL"/>
@@ -602,12 +589,12 @@
 												<xsl:value-of select="$award/ECONOMIC_OPERATOR_NAME_ADDRESS[$it]/CONTACT_POINT"/>
 											</s:name>
 										</xsl:if>
-									</rdf:Description>
+									</s:ContactPoint>
 								</s:contactPoint>
 							</xsl:if>
-						</rdf:Description>
+						</gr:BusinessEntity>
 					</pc:supplier>
-				</rdf:Description>
+				</pc:Tender>
 			</pc:awardedTender>
 		</xsl:if>
 	</xsl:template>
